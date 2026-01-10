@@ -1,0 +1,50 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Arial", sans-serif;
+  margin: 0;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.sidebar-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 1rem;
+}
+
+.sidebar-title {
+  font-weight: bold;
+}
+
+.sidebar-item {
+  border-radius: 0.5rem;
+  margin-bottom: 0.25rem;
+  transition: all 0.2s ease;
+}
+
+.sidebar-item-icon {
+  min-width: 40px;
+  margin-left: 1.5rem;
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.sidebar-item-text {
+  font-size: 1rem;
+  padding: 5px;
+}
+
+.sidebar-drawer-mobile {
+  display: block !important;
+}
+
+.sidebar-drawer-desktop {
+  display: block !important;
+}
