@@ -16,7 +16,7 @@ export const authService = {
   },
 
   register(data: RegisterFields) {
-    return useHttp.create("/auth/register", data);
+    return useHttp.post("/auth/register", data);
   },
 
   me() {

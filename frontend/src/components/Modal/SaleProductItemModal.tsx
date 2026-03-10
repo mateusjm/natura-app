@@ -1,19 +1,19 @@
 // components/Modal/SaleProductItemModal.tsx
-import { useState, useEffect } from "react";
-import BaseModal from "@/components/Modal/BaseModal";
-import type { ProductItem } from "@/types/productItem";
-import {
-  Typography,
-  TextField,
-  Stack,
-  Autocomplete,
-  Button,
-} from "@mui/material";
-import productItemService from "@/services/productItemService";
 import CurrencyInput from "@/components/Form/CurrencyInput";
 import QuantityInput from "@/components/Form/QuantityInput";
+import BaseModal from "@/components/Modal/BaseModal";
 import { useSale } from "@/contexts/saleContext";
+import productItemService from "@/services/productItemService";
+import type { ProductItem } from "@/types/productItem";
 import type { SaleProductItem } from "@/types/saleProductItem";
+import {
+  Autocomplete,
+  Button,
+  Stack,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useEffect, useState } from "react";
 
 interface SaleProductItemModalProps {
   open: boolean;
@@ -73,7 +73,7 @@ export default function SaleProductItemModal({
     const newItem: SaleProductItem = {
       ...(editItem ? { id: editItem.id } : {}),
       sale_id: editItem?.sale_id,
-      product_item_id: product_item.id.toString(),
+      product_item_id: product_item.id!.toString(),
       quantity,
       price,
       product_item,
@@ -104,8 +104,8 @@ export default function SaleProductItemModal({
               : productItems.filter(
                   (pi) =>
                     !saleItems.some(
-                      (item) => item.product_item_id === pi.id.toString()
-                    )
+                      (item) => item.product_item_id === pi.id!.toString(),
+                    ),
                 )
           }
           getOptionLabel={formatOptionLabel}

@@ -4,9 +4,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import LayersIcon from "@mui/icons-material/Layers";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
-import HomePage from "@/pages/home/HomePage";
 import LoginPage from "@/pages/auth/LoginPage";
 import ClientPage from "@/pages/client/ClientPage";
+import HomePage from "@/pages/home/HomePage";
 import ProductItemPage from "@/pages/product-item/ProductItemPage";
 import ProductPage from "@/pages/product/ProductPage";
 import AddSalePage from "@/pages/sale/AddSalePage";
@@ -15,11 +15,12 @@ import SalePage from "@/pages/sale/SalePage";
 import { PeriodProvider } from "@/contexts/periodContext";
 import { SaleProvider } from "@/contexts/saleContext";
 
+import React from "react";
 export interface RouteType {
   path: string;
   name: string;
-  icon?: JSX.Element;
-  component: React.FC | (() => JSX.Element);
+  icon?: React.ReactElement;
+  component: React.FC | (() => React.ReactElement);
   sidebar?: boolean;
 }
 

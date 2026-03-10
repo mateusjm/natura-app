@@ -36,9 +36,7 @@ function HomePage() {
         const { totalSalesProfit } = await saleService.getTotalSalesProfit(
           period
         );
-        const totalStockValue = await productItemService.getTotalStockValue(
-          period
-        );
+        const totalStockValue = await productItemService.getTotalStockValue();
 
         setTotalSalesAmount(totalSalesAmount);
         setTotalSalesProfit(totalSalesProfit);

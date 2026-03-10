@@ -52,7 +52,7 @@ export default function SalePage() {
       <DataTable
         data={sales}
         columns={saleColumns}
-        onEdit={(sale) => handleEdit(sale.id)}
+        onEdit={(sale) => handleEdit(sale.id!)}
         onDelete={openDeleteModal}
       />
       <DeleteConfirmModal

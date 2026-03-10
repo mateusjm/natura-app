@@ -1,14 +1,14 @@
 import Header from "@/components/Header";
-import { useState } from "react";
-import { DataTable } from "@/components/Table/DataTable";
-import { saleProductItemColumns } from "@/tableConfig/sale-product-item/saleProductItemColumns";
-import { useSale } from "@/contexts/saleContext";
 import SaleProductItemModal from "@/components/Modal/SaleProductItemModal";
-import type { SaleProductItem } from "@/types/saleProductItem";
+import { DataTable } from "@/components/Table/DataTable";
+import { useSale } from "@/contexts/saleContext";
 import saleProductItemService from "@/services/saleProductItemService";
+import { saleProductItemColumns } from "@/tableConfig/sale-product-item/saleProductItemColumns";
+import type { SaleProductItem } from "@/types/saleProductItem";
+import { useState } from "react";
 
 export default function AddSaleItemComponent() {
-  const [removedItems, setRemovedItems] = useState<SaleProductItem[]>([]);
+  const [_removedItems, setRemovedItems] = useState<SaleProductItem[]>([]);
 
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState<SaleProductItem | null>(null);
@@ -41,7 +41,7 @@ export default function AddSaleItemComponent() {
     setModalOpen(false);
   };
 
-  console.log(saleItems)
+  console.log(saleItems);
 
   return (
     <>

@@ -2,7 +2,7 @@ import { TextField } from "@mui/material";
 
 interface QuantityInputProps {
   value: number | null;
-  onChange: (value: number) => void;
+  onChange: (value: number | null) => void;
   max?: number;
 }
 
@@ -32,7 +32,7 @@ export default function QuantityInput({
       value={value ?? ""}
       onChange={handleChange}
       helperText={max ? `Máximo disponível: ${max}` : ""}
-      FormHelperTextProps={{ sx: { ml: 0.5 , lineHeight: 1.3} }}
+      FormHelperTextProps={{ sx: { ml: 0.5, lineHeight: 1.3 } }}
     />
   );
 }

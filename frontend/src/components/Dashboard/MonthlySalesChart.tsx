@@ -29,7 +29,7 @@ export default function MonthlySalesChart() {
       try {
         const stats = await saleService.getMonthlyStats(period);
 
-        const formattedData = stats.map((item) => {
+        const formattedData = stats.map((item: MonthlyStat) => {
           const [year, month] = item.month.split("-");
           return {
             ...item,

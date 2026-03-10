@@ -13,7 +13,6 @@ interface SalesCardProps {
 
 export default function SalesCard({
   fetchSales,
-  maxRows = 10,
   maxHeight = "310px",
 }: SalesCardProps) {
   const [sales, setSales] = useState<Sale[]>([]);
