@@ -8,7 +8,7 @@ import { Repository, Not, LessThanOrEqual, MoreThan, Between } from 'typeorm';
 import { ProductItem } from './entities/product-item.entity';
 import { CreateProductItemDto } from './dto/create-product-item.dto';
 import { UpdateProductItemDto } from './dto/update-product-item.dto';
-import { Product } from 'src/product/entities/product.entity';
+import { Product } from '../product/entities/product.entity';
 
 @Injectable()
 export class ProductItemService {

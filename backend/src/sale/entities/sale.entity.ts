@@ -6,9 +6,8 @@ import {
   OneToMany,
   JoinColumn,
 } from 'typeorm';
-import { User } from 'src/user/entities/user.entity';
-import { Client } from 'src/client/entities/client.entity';
-import { SaleProductItem } from 'src/sale-product-item/entities/sale-product-item.entity';
+import { Client } from '../../client/entities/client.entity';
+import { SaleProductItem } from '../../sale-product-item/entities/sale-product-item.entity';
 
 export enum PaymentMethod {
   DINHEIRO = 'dinheiro',

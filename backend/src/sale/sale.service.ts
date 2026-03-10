@@ -4,7 +4,7 @@ import { Repository, Between, MoreThanOrEqual, LessThan  } from 'typeorm';
 import { Sale } from './entities/sale.entity';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
-import { Client } from 'src/client/entities/client.entity';
+import { Client } from '../client/entities/client.entity';
 import { SaleStatus } from './entities/sale.entity';
 
 export type PeriodFilter = '1m' | '3m' | '6m' | '1y' | 'all';

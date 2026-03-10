@@ -8,7 +8,7 @@ import { Repository, DataSource } from 'typeorm';
 import { SaleProductItem } from './entities/sale-product-item.entity';
 import { CreateSaleProductItemDto } from './dto/create-sale-product-item.dto';
 import { UpdateSaleProductItemDto } from './dto/update-sale-product-item.dto';
-import { Sale } from 'src/sale/entities/sale.entity';
+import { Sale } from '../sale/entities/sale.entity';
 import { ProductItem } from '../product-item/entities/product-item.entity';
 
 @Injectable()

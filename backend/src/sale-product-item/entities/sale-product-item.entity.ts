@@ -5,7 +5,7 @@ import {
   JoinColumn,
   Column,
 } from 'typeorm';
-import { Sale } from 'src/sale/entities/sale.entity';
+import { Sale } from '../../sale/entities/sale.entity';
 import { ProductItem } from '../../product-item/entities/product-item.entity';
 
 @Entity()
