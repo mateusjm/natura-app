@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/index.ts": {
-      "runtime": "@vercel/node"
+      "runtime": "nodejs@20.x"
     }
   },
   "routes": [{ "src": "/(.*)", "dest": "api/index.ts" }]
