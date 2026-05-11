@@ -1,30 +1,65 @@
-# Natura App
+# Natura App — Controle de Estoque e Vendas
 
-Aplicação **fullstack** composta por **Backend (NestJS)** e **Frontend (React + Vite)**.
+Sistema **fullstack** para **controle de estoque e vendas**, com **dashboard interativo** para acompanhamento de indicadores e alertas operacionais.
 
-Este README explica **detalhadamente** como configurar e iniciar o projeto **do zero**, pensando em quem nunca rodou a aplicação antes.
+O projeto foi desenvolvido com **Backend em NestJS** (API REST, autenticação e persistência em MySQL) e **Frontend em React + Vite**, utilizando **Material UI** para uma interface consistente e orientada à produtividade.
 
+---
 
-## 📁 Estrutura do Projeto
+## Visão geral
 
-```
+- **Propósito**: apoiar a operação de vendas e gestão de estoque em um único sistema
+- **Proposta**: oferecer uma experiência direta para **cadastrar, consultar, acompanhar e agir** (estoque, clientes e vendas), com visão gerencial por meio de um dashboard
+
+---
+
+## O que o sistema entrega
+
+- **Autenticação** (login/registro) com **JWT**
+- **Cadastro e gestão de clientes**
+- **Cadastro e gestão de produtos**
+- **Controle de estoque por itens** (entradas com quantidade, custo e validade)
+- **Vendas** com acompanhamento por status e prazos (pendências)
+- **Dashboard interativo**, com:
+  - **Lucro total** e **valor bruto de vendas** por período
+  - **Valor total em estoque**
+  - **Gráfico de vendas** com filtro de período
+  - Alertas operacionais: **vendas pendentes** (próximas do vencimento e vencidas) e **itens próximos da validade**
+
+---
+
+## Interface
+
+<p align="center">
+  <img
+    src="frontend/public/assets/video.gif"
+    width="900"
+    style="border: 1px solid #d0d7de; border-radius: 10px;"
+    alt="Demonstração da interface do sistema"
+  />
+</p>
+
+---
+
+## Estrutura do projeto
+
+```txt
 natura-app/
 ├── backend/        # API (NestJS)
 ├── frontend/       # Aplicação web (React + Vite)
 └── README.md
 ```
 
+---
 
-# ⚙️ Pré-requisitos
+## Pré-requisitos
 
-Antes de iniciar, certifique-se de ter instalado:
+- **Node.js** (recomendado: 20.x, conforme `backend/package.json`)
+- **NPM**
+- **MySQL** local (ou acessível em rede)
+- **Git**
 
-* **Node.js** (versão 18 ou superior recomendada)
-* **NPM** (vem junto com o Node)
-* **MySQL** rodando localmente
-* **Git**
-
-Verifique no terminal:
+Verifique:
 
 ```bash
 node -v
@@ -32,9 +67,9 @@ npm -v
 git -v
 ```
 
+---
 
-
-# 🚀 Backend (NestJS)
+## Backend (NestJS)
 
 A partir da raiz do projeto:
 
@@ -42,50 +77,46 @@ A partir da raiz do projeto:
 cd backend
 ```
 
-## 📦 Instalar dependências
+### Instalar dependências
 
 ```bash
 npm install
 ```
 
+### Variáveis de ambiente
 
-## 🔐 Variáveis de Ambiente (Backend)
-
-Crie um arquivo chamado **`.env`** na raiz do projeto dentro da pasta `backend`.
-
-### 📄Siga o exemplo do `.env.example`
+Crie um arquivo **`.env`** em `backend/` com base no `backend/.env.example`:
 
 ```env
 DB_HOST=127.0.0.1
 DB_PORT=3306
 DB_USER=root
 DB_PASS=senha
-DB_NAME=name
+DB_NAME=nome
 JWT_SECRET=seu-token
 FRONTEND_URL=http://localhost:5173
 ```
 
-📌 **Importante**:
+**Importante**
 
-* Nunca suba o arquivo `.env` para o GitHub
-* Use o `.env.example` apenas como modelo
+- Não versionar `.env`
+- Garanta que o MySQL esteja ativo e que o schema (`DB_NAME`) exista (ou esteja configurado conforme seu ambiente)
 
-
-## ▶️ Rodar o Backend
+### Rodar a API
 
 ```bash
-npm run start
+npm run start:dev
 ```
 
-📍 O backend será iniciado em:
+A API sobe em:
 
-```
+```txt
 http://localhost:3000
 ```
 
+---
 
-# 🎨 Frontend (React + Vite)
-
+## Frontend (React + Vite)
 
 A partir da raiz do projeto:
 
@@ -93,88 +124,83 @@ A partir da raiz do projeto:
 cd frontend
 ```
 
-
-## 📦 Instalar dependências
+### Instalar dependências
 
 ```bash
 npm install
 ```
 
+### Variáveis de ambiente
 
-## 🔐 Variáveis de Ambiente (Frontend)
-
-Crie um arquivo chamado **`.env`** dentro da pasta `frontend`.
-
-### 📄 `.env.example`
+Crie um arquivo **`.env`** em `frontend/` com base no `frontend/.env.example`:
 
 ```env
-VITE_API_URL=http://localhost:3000
+VITE_API_URL="http://localhost:3000"
 ```
 
-📌 Observação:
-
-* O Vite exige que as variáveis comecem com `VITE_`
-
-
-## ▶️ Rodar o Frontend
+### Rodar o frontend
 
 ```bash
 npm run dev
 ```
 
-📍 A aplicação estará disponível em:
+A aplicação web fica disponível em:
 
-```
+```txt
 http://localhost:5173
 ```
 
+---
 
-# 🔁 Fluxo de Inicialização
+## Fluxo de inicialização (do zero)
 
 ```bash
-# Clonar o projeto
+# Clonar
 git clone https://github.com/mateusjm/natura-app.git
+cd natura-app
 
 # Backend
-cd natura-app/backend
+cd backend
 npm install
-npm run start
+npm run start:dev
 
-# Frontend
+# Frontend (em outro terminal)
 cd ../frontend
 npm install
 npm run dev
 ```
 
-# 🧪 Tecnologias Utilizadas
+---
+
+## Tecnologias
 
 ### Backend
 
-* NestJS
-* TypeORM
-* MySQL
-* JWT Authentication
+- NestJS
+- TypeORM
+- MySQL
+- JWT
 
 ### Frontend
 
-* React
-* Vite
-* TypeScript
-* Tailwind CSS
-* Material UI
+- React + Vite
+- TypeScript
+- Material UI
+- Tailwind CSS
+- Axios
+---
+
+## Organização interna (visão técnica)
+
+- **Módulos da API**: `auth`, `user`, `client`, `product`, `product-item` (estoque), `sale` e `sale-product-item`
+- **Páginas**: Home (Dashboard), Vendas, Clientes, Produtos e Estoque
+- **Serviços de integração**: camada `services/` no frontend consumindo a API via Axios
+- **Contextos/Estado**: autenticação e filtros (ex.: período do dashboard)
 
 ---
 
-# 📌 Observações Importantes
+## Observações
 
-* Backend e Frontend devem estar rodando **simultaneamente**
-* Certifique-se de que as portas **3000** e **5173** estejam livres
-* Caso altere portas, atualize os arquivos `.env`
-
----
-
-# ✅ Pronto!
-
-Com isso, o projeto estará totalmente funcional em ambiente local.
-
-Se tiver qualquer dúvida ou problema na inicialização, revise os passos acima ou as variáveis de ambiente.
+- Backend e frontend devem rodar **simultaneamente**
+- Portas padrão: **3000** (API) e **5173** (web)
+- O CORS do backend usa `FRONTEND_URL` para permitir o acesso do frontend
