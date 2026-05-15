@@ -6,16 +6,18 @@ import { pendingSalesColumns } from "@/tableConfig/home/pendingSalesColumns";
 import type { Sale } from "@/types/sale";
 
 interface SalesCardProps {
-  fetchSales: () => Promise<Sale[]>; 
+  fetchSales: () => Promise<Sale[]>;
+  initialData?: Sale[];
   maxRows?: number;
   maxHeight?: string | number;
 }
 
 export default function SalesCard({
   fetchSales,
+  initialData,
   maxHeight = "310px",
 }: SalesCardProps) {
-  const [sales, setSales] = useState<Sale[]>([]);
+  const [sales, setSales] = useState<Sale[]>(initialData ?? []);
   const navigate = useNavigate();
 
   useEffect(() => {

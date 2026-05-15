@@ -1,4 +1,12 @@
+import {
+  getMockMonthlyStats,
+  mockOverdueSales,
+  mockPendingSales,
+  mockTotalSalesAmount,
+  mockTotalSalesProfit,
+} from "@/mocks/dashboardMock";
 import useHttp from "@/services/useHttp";
+import { withDashboardMock } from "@/utils/withDashboardMock";
 import type { Sale, CreateSaleDTO } from "@/types/sale";
 export type UpdateSaleDTO = Partial<CreateSaleDTO>;
 
@@ -52,40 +60,54 @@ const saleService = {
     }
   },
 
-  getTotalSalesAmount: async (period: string = "1m") => {
-    const res = await useHttp.get(`/sale/total-sales-amount?period=${period}`);
-    return res.data;
-  },
+  getTotalSalesAmount: async (period: string = "1m") =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get(
+          `/sale/total-sales-amount?period=${period}`
+        );
+        return res.data;
+      },
+      { totalSalesAmount: mockTotalSalesAmount }
+    ),
 
-  getTotalSalesProfit: async (period: string = "1m") => {
-    const res = await useHttp.get(`/sale/total-sales-profit?period=${period}`);
-    return res.data;
-  },
+  getTotalSalesProfit: async (period: string = "1m") =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get(
+          `/sale/total-sales-profit?period=${period}`
+        );
+        return res.data;
+      },
+      { totalSalesProfit: mockTotalSalesProfit }
+    ),
 
-  getMonthlyStats: async (period: string = "1m") => {
-    const res = await useHttp.get(`/sale/monthly-stats?period=${period}`);
-    return res.data;
-  },
+  getMonthlyStats: async (period: string = "1m") =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get(`/sale/monthly-stats?period=${period}`);
+        return res.data;
+      },
+      getMockMonthlyStats(period)
+    ),
 
-  getPendingSales: async (limit: number = 10): Promise<Sale[]> => {
-    try {
-      const res = await useHttp.get(`/sale/pending?limit=${limit}`);
-      return res.data;
-    } catch (error) {
-      console.log("Erro ao obter vendas pendentes", error);
-      throw error;
-    }
-  },
+  getPendingSales: async (limit: number = 10): Promise<Sale[]> =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get(`/sale/pending?limit=${limit}`);
+        return res.data;
+      },
+      mockPendingSales.slice(0, limit)
+    ),
 
-  getPendingOverdueSales: async (limit: number = 10): Promise<Sale[]> => {
-    try {
-      const res = await useHttp.get(`/sale/overdue?limit=${limit}`);
-      return res.data;
-    } catch (error) {
-      console.log("Erro ao obter vendas pendentes vencidas", error);
-      throw error;
-    }
-  },
+  getPendingOverdueSales: async (limit: number = 10): Promise<Sale[]> =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get(`/sale/overdue?limit=${limit}`);
+        return res.data;
+      },
+      mockOverdueSales.slice(0, limit)
+    ),
 };
 
 export default saleService;

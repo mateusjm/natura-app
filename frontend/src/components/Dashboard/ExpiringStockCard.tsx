@@ -1,12 +1,16 @@
 import { DataTableSale } from "@/components/Table/DataTableSale";
+import { mockExpiringItems } from "@/mocks/dashboardMock";
 import productItemService from "@/services/productItemService";
+import { isDashboardMockImmediate } from "@/utils/withDashboardMock";
 import { expiringStockColumns } from "@/tableConfig/home/expiringStockColumns";
 import type { ProductItem } from "@/types/productItem";
 import { Box } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function ExpiringStockCard() {
-  const [expiringItems, setExpiringItems] = useState<ProductItem[]>([]);
+  const [expiringItems, setExpiringItems] = useState<ProductItem[]>(() =>
+    isDashboardMockImmediate() ? mockExpiringItems : []
+  );
 
   useEffect(() => {
     const loadExpiringItems = async () => {

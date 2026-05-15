@@ -1,5 +1,10 @@
+import {
+  formatMonthlyStatsForChart,
+  getMockMonthlyStatsFormatted,
+} from "@/mocks/dashboardMock";
 import { usePeriod } from "@/contexts/periodContext";
 import saleService from "@/services/saleService";
+import { isDashboardMockImmediate } from "@/utils/withDashboardMock";
 import { Box, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 import {
@@ -22,22 +27,16 @@ interface MonthlyStat {
 export default function MonthlySalesChart() {
   const theme = useTheme();
   const { period } = usePeriod();
-  const [data, setData] = useState<MonthlyStat[]>([]);
+  const [data, setData] = useState<MonthlyStat[]>(() =>
+    isDashboardMockImmediate() ? getMockMonthlyStatsFormatted(period) : []
+  );
 
   useEffect(() => {
     const loadMonthlyStats = async () => {
       try {
         const stats = await saleService.getMonthlyStats(period);
 
-        const formattedData = stats.map((item: MonthlyStat) => {
-          const [year, month] = item.month.split("-");
-          return {
-            ...item,
-            month: `${month}/${year}`,
-          };
-        });
-
-        setData(formattedData);
+        setData(formatMonthlyStatsForChart(stats));
       } catch (error) {
         console.error("Erro ao carregar estatísticas mensais:", error);
         setData([]);

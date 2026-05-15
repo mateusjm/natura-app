@@ -5,8 +5,16 @@ import PeriodSelector from "@/components/Dashboard/PeriodSelector";
 import SalesCard from "@/components/Dashboard/SalesCard";
 import PageTitle from "@/components/PageTitle/PageTitle";
 import { usePeriod } from "@/contexts/periodContext";
+import {
+  mockOverdueSales,
+  mockPendingSales,
+  mockTotalSalesAmount,
+  mockTotalSalesProfit,
+  mockTotalStockValue,
+} from "@/mocks/dashboardMock";
 import productItemService from "@/services/productItemService";
 import saleService from "@/services/saleService";
+import { isDashboardMockImmediate } from "@/utils/withDashboardMock";
 import { Box, Grid, Typography, useTheme } from "@mui/material";
 import { useEffect, useState } from "react";
 
@@ -18,9 +26,17 @@ function HomePage() {
   const { period } = usePeriod();
   const theme = useTheme();
 
-  const [totalSalesAmount, setTotalSalesAmount] = useState<number | null>(null);
-  const [totalSalesProfit, setTotalSalesProfit] = useState<number | null>(null);
-  const [totalStockValue, setTotalStockValue] = useState<number | null>(null);
+  const mockImmediate = isDashboardMockImmediate();
+
+  const [totalSalesAmount, setTotalSalesAmount] = useState<number | null>(
+    mockImmediate ? mockTotalSalesAmount : null
+  );
+  const [totalSalesProfit, setTotalSalesProfit] = useState<number | null>(
+    mockImmediate ? mockTotalSalesProfit : null
+  );
+  const [totalStockValue, setTotalStockValue] = useState<number | null>(
+    mockImmediate ? mockTotalStockValue : null
+  );
 
   const [profileOpen, setProfileOpen] = useState(false);
 
@@ -30,13 +46,15 @@ function HomePage() {
   useEffect(() => {
     const loadDashboardData = async () => {
       try {
-        const { totalSalesAmount } = await saleService.getTotalSalesAmount(
-          period
-        );
-        const { totalSalesProfit } = await saleService.getTotalSalesProfit(
-          period
-        );
-        const totalStockValue = await productItemService.getTotalStockValue();
+        const [
+          { totalSalesAmount },
+          { totalSalesProfit },
+          totalStockValue,
+        ] = await Promise.all([
+          saleService.getTotalSalesAmount(period),
+          saleService.getTotalSalesProfit(period),
+          productItemService.getTotalStockValue(),
+        ]);
 
         setTotalSalesAmount(totalSalesAmount);
         setTotalSalesProfit(totalSalesProfit);
@@ -128,7 +146,10 @@ function HomePage() {
 
         <Grid size={{ xs: 12, md: 4 }}>
           <DashboardCard title="Vendas Pendentes Quase Vencendo!">
-            <SalesCard fetchSales={() => saleService.getPendingSales(10)} />
+            <SalesCard
+              fetchSales={() => saleService.getPendingSales(10)}
+              initialData={mockImmediate ? mockPendingSales : undefined}
+            />
           </DashboardCard>
         </Grid>
 
@@ -142,6 +163,7 @@ function HomePage() {
           <DashboardCard title="Vendas Pendentes Vencidas!">
             <SalesCard
               fetchSales={() => saleService.getPendingOverdueSales(10)}
+              initialData={mockImmediate ? mockOverdueSales : undefined}
             />
           </DashboardCard>
         </Grid>

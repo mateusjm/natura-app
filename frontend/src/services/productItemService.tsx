@@ -1,4 +1,9 @@
+import {
+  mockExpiringItems,
+  mockTotalStockValue,
+} from "@/mocks/dashboardMock";
 import useHttp from "@/services/useHttp";
+import { withDashboardMock } from "@/utils/withDashboardMock";
 import type { CreateProductItemDTO, ProductItem } from "@/types/productItem";
 
 const productItemService = {
@@ -22,15 +27,14 @@ const productItemService = {
     }
   },
 
-  getTotalStockValue: async (): Promise<number> => {
-    try {
-      const res = await useHttp.get("/product-item/total-stock-value");
-      return res.data.totalStockValue;
-    } catch (error) {
-      console.log("Erro ao obter valor total do estoque", error);
-      throw error;
-    }
-  },
+  getTotalStockValue: async (): Promise<number> =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get("/product-item/total-stock-value");
+        return res.data.totalStockValue;
+      },
+      mockTotalStockValue
+    ),
 
   getById: async (id: string): Promise<ProductItem> => {
     try {
@@ -42,15 +46,14 @@ const productItemService = {
     }
   },
 
-  getExpiringItems: async (): Promise<ProductItem[]> => {
-    try {
-      const res = await useHttp.get(`/product-item/expiring`);
-      return res.data;
-    } catch (error) {
-      console.log("Erro ao obter produtos próximos do vencimento", error);
-      throw error;
-    }
-  },
+  getExpiringItems: async (): Promise<ProductItem[]> =>
+    withDashboardMock(
+      async () => {
+        const res = await useHttp.get("/product-item/expiring");
+        return res.data;
+      },
+      mockExpiringItems
+    ),
 
   update: async (
     id: number,
