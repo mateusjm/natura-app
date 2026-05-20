@@ -1,4 +1,5 @@
 import { authService } from "@/services/authService";
+import { AUTH_UNAUTHORIZED_EVENT } from "@/utils/authSession";
 import type { ReactNode } from "react";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -80,6 +81,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     getUserInfo();
   }, []);
+
+  useEffect(() => {
+    function onUnauthorized() {
+      setIsLogged(false);
+      setUser(null);
+      navigate("/auth/login", { replace: true });
+    }
+
+    window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+    return () =>
+      window.removeEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);
+  }, [navigate]);
 
   return (
     <AuthContext.Provider
