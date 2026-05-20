@@ -1,15 +1,22 @@
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule } from '@nestjs/config';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
-import { ProductModule } from './product/product.module';
 import { ClientModule } from './client/client.module';
 import { ProductItemModule } from './product-item/product-item.module';
-import { SaleModule } from './sale/sale.module';
+import { ProductModule } from './product/product.module';
 import { SaleProductItemModule } from './sale-product-item/sale-product-item.module';
+import { SaleModule } from './sale/sale.module';
+import { UserModule } from './user/user.module';
+
+const dbHost = process.env.DB_HOST ?? '';
+const useDbSsl =
+  process.env.DB_SSL === 'true' || dbHost.includes('tidbcloud.com');
+const dbSslOptions = useDbSsl
+  ? ({ minVersion: 'TLSv1.2' } as const)
+  : undefined;
 
 @Module({
   imports: [
@@ -25,12 +32,12 @@ import { SaleProductItemModule } from './sale-product-item/sale-product-item.mod
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
-      ssl:
-        process.env.DB_SSL === 'true'
-          ? {
-              minVersion: 'TLSv1.2',
-            }
-          : undefined,
+      ...(dbSslOptions && {
+        ssl: dbSslOptions,
+        extra: {
+          ssl: dbSslOptions,
+        },
+      }),
     }),
     UserModule,
     AuthModule,
