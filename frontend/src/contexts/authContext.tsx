@@ -1,5 +1,5 @@
 import { authService } from "@/services/authService";
-import { AUTH_UNAUTHORIZED_EVENT } from "@/utils/authSession";
+import { AUTH_UNAUTHORIZED_EVENT, isPublicAuthPath } from "@/utils/authSession";
 import type { ReactNode } from "react";
 import { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -57,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data } = await authService.me();
     afterConfirmLogin(data);
 
-    navigate("/");
+    navigate("/painel");
     return response;
   }
 
@@ -86,7 +86,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     function onUnauthorized() {
       setIsLogged(false);
       setUser(null);
-      navigate("/auth/login", { replace: true });
+      if (!isPublicAuthPath()) {
+        navigate("/auth/login", { replace: true });
+      }
     }
 
     window.addEventListener(AUTH_UNAUTHORIZED_EVENT, onUnauthorized);

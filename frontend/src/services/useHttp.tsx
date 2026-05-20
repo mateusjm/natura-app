@@ -1,4 +1,4 @@
-import { emitAuthUnauthorized } from "@/utils/authSession";
+import { emitAuthUnauthorized, isPublicAuthPath } from "@/utils/authSession";
 import axios from "axios";
 
 const useHttp = axios.create({
@@ -31,7 +31,7 @@ useHttp.interceptors.response.use(
   function (error) {
     if (error.response?.status === 401) {
       localStorage.removeItem("access-token");
-      if (window.location.pathname !== "/auth/login") {
+      if (!isPublicAuthPath()) {
         emitAuthUnauthorized();
       }
     }

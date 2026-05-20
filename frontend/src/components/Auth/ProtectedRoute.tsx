@@ -22,7 +22,7 @@ export function PublicRoute({ children }: { children: React.ReactNode }) {
   if (!auth) throw new Error("AuthContext not found");
 
   if (auth.authLoading) return <Loading />;
-  if (auth.isLogged) return <Navigate to="/" replace />;
+  if (auth.isLogged) return <Navigate to="/painel" replace />;
 
   return children;
 }

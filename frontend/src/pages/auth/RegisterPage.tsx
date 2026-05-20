@@ -1,7 +1,6 @@
 import AuthBackLink from "@/components/Auth/AuthBackLink";
 import { AuthContext } from "@/contexts/authContext";
-import { getAuthErrorMessage } from "@/errors/auth/messages";
-import type { LoginFields } from "@/types/auth";
+import type { RegisterFields } from "@/types/auth";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
   Box,
@@ -14,41 +13,53 @@ import {
   Typography,
 } from "@mui/material";
 import { useContext, useState } from "react";
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 
-export default function Login() {
-  const [form, setForm] = useState<LoginFields>({
+export default function RegisterPage() {
+  const [form, setForm] = useState<RegisterFields>({
+    name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const authContext = useContext(AuthContext);
   if (!authContext) throw new Error("AuthContext not found");
 
-  const { handleLogin } = authContext;
+  const { handleRegister } = authContext;
+  const navigate = useNavigate();
 
   const handleChange =
-    (field: keyof LoginFields) => (e: React.ChangeEvent<HTMLInputElement>) => {
+    (field: keyof RegisterFields) =>
+    (e: React.ChangeEvent<HTMLInputElement>) => {
       setForm((prev) => ({ ...prev, [field]: e.target.value }));
     };
 
-  const toggleShowPassword = () => {
-    setShowPassword((prev) => !prev);
-  };
-
   const onSubmit = async () => {
+    if (form.password !== form.confirmPassword) {
+      setError("As senhas não coincidem");
+      return;
+    }
+
     setLoading(true);
     setError(null);
 
     try {
-      await handleLogin(form);
-    } catch (err: any) {
-      console.error(err);
-      setError(getAuthErrorMessage(err.response?.status));
+      await handleRegister(form);
+      navigate("/auth/login");
+    } catch (err: unknown) {
+      const status = (err as { response?: { status?: number } })?.response
+        ?.status;
+      if (status === 409) {
+        setError("E-mail já cadastrado");
+      } else {
+        setError("Não foi possível criar a conta. Tente novamente.");
+      }
     } finally {
       setLoading(false);
     }
@@ -83,7 +94,7 @@ export default function Login() {
         }}
       >
         <Typography variant="h4" align="center" mb={2}>
-          Login
+          Criar conta
         </Typography>
 
         {error && (
@@ -91,6 +102,13 @@ export default function Login() {
             {error}
           </Typography>
         )}
+
+        <TextField
+          label="Nome"
+          value={form.name}
+          onChange={handleChange("name")}
+          fullWidth
+        />
 
         <TextField
           label="E-mail"
@@ -108,8 +126,31 @@ export default function Login() {
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
-                <IconButton onClick={toggleShowPassword} edge="end">
+                <IconButton
+                  onClick={() => setShowPassword((p) => !p)}
+                  edge="end"
+                >
                   {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            ),
+          }}
+        />
+
+        <TextField
+          label="Confirmar senha"
+          type={showConfirmPassword ? "text" : "password"}
+          value={form.confirmPassword}
+          onChange={handleChange("confirmPassword")}
+          fullWidth
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="end">
+                <IconButton
+                  onClick={() => setShowConfirmPassword((p) => !p)}
+                  edge="end"
+                >
+                  {showConfirmPassword ? <VisibilityOff /> : <Visibility />}
                 </IconButton>
               </InputAdornment>
             ),
@@ -125,13 +166,17 @@ export default function Login() {
           onClick={onSubmit}
           disabled={loading}
         >
-          {loading ? <CircularProgress size={24} color="inherit" /> : "Login"}
+          {loading ? (
+            <CircularProgress size={24} color="inherit" />
+          ) : (
+            "Cadastrar"
+          )}
         </Button>
 
         <Typography variant="body2" align="center" color="text.secondary">
-          Não tem conta?{" "}
-          <Link component={RouterLink} to="/auth/register" color="primary">
-            Criar conta
+          Já tem conta?{" "}
+          <Link component={RouterLink} to="/auth/login" color="primary">
+            Fazer login
           </Link>
         </Typography>
       </Box>

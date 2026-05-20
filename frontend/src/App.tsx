@@ -6,6 +6,7 @@ import { useThemeContext } from "@/contexts/themeContext";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "@/layout/Layout";
 import { ProtectedRoute, PublicRoute } from "@/components/Auth/ProtectedRoute";
+import LandingPage from "@/pages/landing/LandingPage";
 import { routes } from "@/routes/routes";
 import { LayoutProvider } from "@/contexts/layoutContext";
 
@@ -18,6 +19,7 @@ export default function App() {
       <LayoutProvider>
         <BrowserRouter>
           <Routes>
+            <Route path="/" element={<LandingPage />} />
             <Route element={<Layout />}>
               {routes.map((route) => {
                 const Component = route.component;

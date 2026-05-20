@@ -60,7 +60,8 @@ const Sidebar: React.FC<SidebarProps> = ({ drawerWidth, title }) => {
           .map((route) => {
             const selected =
               location.pathname === route.path ||
-              (route.path !== "/" && location.pathname.startsWith(route.path));
+              (route.path !== "/painel" &&
+                location.pathname.startsWith(route.path));
 
             return (
               <ListItemButton

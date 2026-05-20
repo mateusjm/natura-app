@@ -5,6 +5,7 @@ import LayersIcon from "@mui/icons-material/Layers";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 
 import LoginPage from "@/pages/auth/LoginPage";
+import RegisterPage from "@/pages/auth/RegisterPage";
 import ClientPage from "@/pages/client/ClientPage";
 import HomePage from "@/pages/home/HomePage";
 import ProductItemPage from "@/pages/product-item/ProductItemPage";
@@ -27,7 +28,7 @@ export interface RouteType {
 
 export const routes: RouteType[] = [
   {
-    path: "/",
+    path: "/painel",
     name: "Home",
     icon: <HomeIcon />,
     component: () => (
@@ -79,6 +80,13 @@ export const routes: RouteType[] = [
     path: "/auth/login",
     name: "Login",
     component: LoginPage,
+    sidebar: false,
+    public: true,
+  },
+  {
+    path: "/auth/register",
+    name: "Cadastro",
+    component: RegisterPage,
     sidebar: false,
     public: true,
   },

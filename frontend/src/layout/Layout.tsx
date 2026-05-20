@@ -10,7 +10,7 @@ const Layout: React.FC = () => {
   const isDesktop = useMediaQuery(theme.breakpoints.up("md"));
 
   const location = useLocation();
-  const hideSidebarRoutes = ["/auth/login"];
+  const hideSidebarRoutes = ["/auth/login", "/auth/register"];
 
   const showSidebar = !hideSidebarRoutes.includes(location.pathname);
 
