@@ -31,7 +31,7 @@ useHttp.interceptors.response.use(
     if (error.response?.status === 401) {
       localStorage.removeItem("access-token");
       if (window.location.pathname !== "/auth/login") {
-        window.location.replace("auth/login");
+        window.location.replace("/auth/login");
       }
     }
 

@@ -1,12 +1,13 @@
 import { authService } from "@/services/authService";
 import type { ReactNode } from "react";
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 
 import type { LoginFields, RegisterFields } from "@/types/auth";
 
 interface AuthContextType {
   isLogged: boolean;
+  authLoading: boolean;
   setIsLogged: (val: boolean) => void;
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -27,6 +28,7 @@ interface User {
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [isLogged, setIsLogged] = useState(false);
+  const [authLoading, setAuthLoading] = useState(true);
   const [user, setUser] = useState<User | null>(null);
   const navigate = useNavigate();
 
@@ -35,8 +37,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const { data } = await authService.me();
       afterConfirmLogin(data);
       return true;
-    } catch (e) {
-      console.log(e);
+    } catch {
+      setIsLogged(false);
+      setUser(null);
+      localStorage.removeItem("access-token");
+      return false;
+    } finally {
+      setAuthLoading(false);
     }
   }
 
@@ -71,15 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    if (!isLogged) {
-      getUserInfo();
-    }
+    getUserInfo();
   }, []);
 
   return (
     <AuthContext.Provider
       value={{
         isLogged,
+        authLoading,
         setIsLogged,
         getUserInfo,
         user,

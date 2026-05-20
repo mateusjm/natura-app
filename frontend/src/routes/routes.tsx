@@ -22,6 +22,7 @@ export interface RouteType {
   icon?: React.ReactElement;
   component: React.FC | (() => React.ReactElement);
   sidebar?: boolean;
+  public?: boolean;
 }
 
 export const routes: RouteType[] = [
@@ -79,5 +80,6 @@ export const routes: RouteType[] = [
     name: "Login",
     component: LoginPage,
     sidebar: false,
+    public: true,
   },
 ];
