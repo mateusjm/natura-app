@@ -1,34 +1,44 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import serverlessExpress from '@vendia/serverless-express';
-import express from 'express';
+import type { Express } from 'express';
+import type { IncomingMessage, ServerResponse } from 'http';
 import { AppModule } from '../src/app.module';
 
-let server: any;
+let expressApp: Express | undefined;
 
-async function bootstrap() {
-  // Cria apenas o Nest normalmente
+async function bootstrap(): Promise<Express> {
   const app = await NestFactory.create(AppModule);
 
-  // Configura CORS
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
   app.enableCors({
     origin: process.env.FRONTEND_URL,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true,
   });
 
-  // Inicializa o Nest (não chama app.listen)
   await app.init();
 
-  // Cria a instância Express e conecta com serverless
-  const expressApp = express();
-  expressApp.use(app.getHttpAdapter().getInstance());
-
-  return serverlessExpress({ app: expressApp });
+  return app.getHttpAdapter().getInstance() as Express;
 }
 
-export default async function handler(req: any, res: any) {
-  if (!server) {
-    server = await bootstrap();
+export default async function handler(
+  req: IncomingMessage,
+  res: ServerResponse,
+): Promise<void> {
+  if (!expressApp) {
+    expressApp = await bootstrap();
   }
-  return server(req, res);
+
+  await new Promise<void>((resolve, reject) => {
+    res.once('finish', resolve);
+    res.once('error', reject);
+    expressApp!(req, res);
+  });
 }
