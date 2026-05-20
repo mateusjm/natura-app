@@ -1,206 +1,113 @@
 # Natura App — Controle de Estoque e Vendas
 
-Sistema **fullstack** para **controle de estoque e vendas**, com **dashboard interativo** para acompanhamento de indicadores e alertas operacionais.
-
-O projeto foi desenvolvido com **Backend em NestJS** (API REST, autenticação e persistência em MySQL) e **Frontend em React + Vite**, utilizando **Material UI** para uma interface consistente e orientada à produtividade.
+Ferramenta para **consultores e revenda** que precisam de **controle de vendas e estoque em um só lugar** — sem planilhas, com indicadores claros e alertas que ajudam a agir no dia a dia.
 
 ---
 
-## Visão geral
+## O problema
 
-- **Propósito**: apoiar a operação de vendas e gestão de estoque em um único sistema
-- **Proposta**: oferecer uma experiência direta para **cadastrar, consultar, acompanhar e agir** (estoque, clientes e vendas), com visão gerencial por meio de um dashboard
+Quem vende e repõe estoque costuma lidar com informação espalhada: clientes em um lugar, produtos em outro, vendas anotadas à parte e validade “na cabeça”. Isso gera atrito operacional:
+
+- **Dificuldade para saber quanto lucrou** e quanto ainda está em aberto
+- **Vendas pendentes** que passam do prazo sem aviso
+- **Produtos perto da validade** sem priorização
+- **Estoque sem visão de valor** (quanto está parado em prateleira)
+- **Retrabalho** ao cadastrar a mesma informação em vários lugares
+
+O Natura App centraliza **clientes, produtos, estoque e vendas** e coloca na frente o que importa: **números, prazos e alertas**.
 
 ---
 
-## O que o sistema entrega
+## A solução
 
-- **Autenticação** (login/registro) com **JWT**
-- **Cadastro e gestão de clientes**
-- **Cadastro e gestão de produtos**
-- **Controle de estoque por itens** (entradas com quantidade, custo e validade)
-- **Vendas** com acompanhamento por status e prazos (pendências)
-- **Dashboard interativo**, com:
-  - **Lucro total** e **valor bruto de vendas** por período
-  - **Valor total em estoque**
-  - **Gráfico de vendas** com filtro de período
-  - Alertas operacionais: **vendas pendentes** (próximas do vencimento e vencidas) e **itens próximos da validade**
+Um sistema web pensado para a rotina de quem vende: cadastrar rápido, consultar com clareza e acompanhar a operação por um **dashboard** com lucro, vendas, estoque e avisos operacionais.
+
+| Você precisa de… | O sistema oferece… |
+| --- | --- |
+| Ver resultado do período | Lucro total, valor bruto de vendas e gráfico com filtro (1, 3, 6 ou 12 meses) |
+| Saber o que está parado em estoque | Valor total em estoque e controle por entrada (quantidade, custo, validade) |
+| Não perder cobrança | Alertas de vendas pendentes **quase vencendo** e **vencidas** |
+| Priorizar giro | Alertas de itens **próximos da validade** |
+| Organizar a base | Cadastro e gestão de **clientes** e **produtos**, com vendas vinculadas ao cliente certo |
 
 ---
 
 ## Interface
 
+### Página inicial — proposta e benefícios
+
 <p align="center">
   <img
-    src="frontend/public/assets/video.gif"
+    src="frontend/assets/home.png"
     width="900"
-    style="border: 1px solid #d0d7de; border-radius: 10px;"
-    alt="Demonstração da interface do sistema"
+    alt="Página inicial: controle de vendas e estoque em um só lugar"
+  />
+</p>
+
+<p align="center">
+  <img
+    src="frontend/assets/home2.png"
+    width="900"
+    alt="Benefícios: estoque, clientes, vendas, alertas e dashboard"
+  />
+</p>
+
+### Dashboard — indicadores e alertas
+
+Visão gerencial com cards de **lucro**, **valor bruto**, **valor em estoque**, gráfico de vendas por período e tabelas de alertas (pendências e validade).
+
+<p align="center">
+  <img
+    src="frontend/assets/dashboard.png"
+    width="900"
+    alt="Dashboard com indicadores, gráfico de vendas e alertas operacionais"
+  />
+</p>
+
+### Vendas — status, prazos e lucro
+
+Registre vendas, acompanhe **pendente** ou **pago**, prazo de pagamento, lucro e valor bruto por transação.
+
+<p align="center">
+  <img
+    src="frontend/assets/sales.png"
+    width="900"
+    alt="Tela de vendas com status, prazos e ações por registro"
   />
 </p>
 
 ---
 
-## Estrutura do projeto
+## O que você consegue fazer
 
-```txt
-natura-app/
-├── backend/        # API (NestJS)
-├── frontend/       # Aplicação web (React + Vite)
-└── README.md
-```
-
----
-
-## Pré-requisitos
-
-- **Node.js** (recomendado: 20.x, conforme `backend/package.json`)
-- **NPM**
-- **MySQL** local (ou acessível em rede)
-- **Git**
-
-Verifique:
-
-```bash
-node -v
-npm -v
-git -v
-```
+- **Entrar e manter sua conta** — acesso seguro à sua operação
+- **Clientes** — cadastro e consulta; cada venda ligada ao contato certo
+- **Produtos** — catálogo para usar nas vendas e no estoque
+- **Estoque** — entradas com quantidade, custo e validade; visão do valor total
+- **Vendas** — registro com método de pagamento, lucro, valor bruto, status e prazo
+- **Home (dashboard)** — números do período, gráfico e alertas para agir antes do problema virar prejuízo
 
 ---
 
-## Backend (NestJS)
+## Como funciona na prática
 
-A partir da raiz do projeto:
+1. **Cadastre** clientes e produtos.
+2. **Registre entradas** no estoque (com validade quando fizer sentido).
+3. **Lance vendas** e defina status e prazo de pagamento.
+4. **Use o dashboard** para ver lucro, vendas no período, valor em estoque e o que exige atenção hoje.
 
-```bash
-cd backend
-```
-
-### Instalar dependências
-
-```bash
-npm install
-```
-
-### Variáveis de ambiente
-
-Crie um arquivo **`.env`** em `backend/` com base no `backend/.env.example`:
-
-```env
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_USER=root
-DB_PASS=senha
-DB_NAME=nome
-JWT_SECRET=seu-token
-FRONTEND_URL=http://localhost:5173
-```
-
-**Importante**
-
-- Não versionar `.env`
-- Garanta que o MySQL esteja ativo e que o schema (`DB_NAME`) exista (ou esteja configurado conforme seu ambiente)
-
-### Rodar a API
-
-```bash
-npm run start:dev
-```
-
-A API sobe em:
-
-```txt
-http://localhost:3000
-```
+O fluxo é direto: menos tempo organizando planilha, mais tempo vendendo e decidindo com base em dados.
 
 ---
 
-## Frontend (React + Vite)
+## Para quem é
 
-A partir da raiz do projeto:
-
-```bash
-cd frontend
-```
-
-### Instalar dependências
-
-```bash
-npm install
-```
-
-### Variáveis de ambiente
-
-Crie um arquivo **`.env`** em `frontend/` com base no `frontend/.env.example`:
-
-```env
-VITE_API_URL="http://localhost:3000"
-```
-
-### Rodar o frontend
-
-```bash
-npm run dev
-```
-
-A aplicação web fica disponível em:
-
-```txt
-http://localhost:5173
-```
+- Consultores e revendedores que precisam de **controle sem complexidade**
+- Quem quer **substituir planilhas** por um painel único
+- Operações que dependem de **prazo de pagamento** e **validade de produto**
 
 ---
 
-## Fluxo de inicialização (do zero)
+## Stack (referência)
 
-```bash
-# Clonar
-git clone https://github.com/mateusjm/natura-app.git
-cd natura-app
-
-# Backend
-cd backend
-npm install
-npm run start:dev
-
-# Frontend (em outro terminal)
-cd ../frontend
-npm install
-npm run dev
-```
-
----
-
-## Tecnologias
-
-### Backend
-
-- NestJS
-- TypeORM
-- MySQL
-- JWT
-
-### Frontend
-
-- React + Vite
-- TypeScript
-- Material UI
-- Tailwind CSS
-- Axios
----
-
-## Organização interna (visão técnica)
-
-- **Módulos da API**: `auth`, `user`, `client`, `product`, `product-item` (estoque), `sale` e `sale-product-item`
-- **Páginas**: Home (Dashboard), Vendas, Clientes, Produtos e Estoque
-- **Serviços de integração**: camada `services/` no frontend consumindo a API via Axios
-- **Contextos/Estado**: autenticação e filtros (ex.: período do dashboard)
-
----
-
-## Observações
-
-- Backend e frontend devem rodar **simultaneamente**
-- Portas padrão: **3000** (API) e **5173** (web)
-- O CORS do backend usa `FRONTEND_URL` para permitir o acesso do frontend
+Backend em **NestJS** (API REST, JWT, MySQL via TypeORM). Frontend em **React + Vite**, **Material UI** e **Tailwind CSS**, consumindo a API com **Axios**.
