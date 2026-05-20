@@ -25,6 +25,12 @@ import { SaleProductItemModule } from './sale-product-item/sale-product-item.mod
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true,
+      ssl:
+        process.env.DB_SSL === 'true'
+          ? {
+              minVersion: 'TLSv1.2',
+            }
+          : undefined,
     }),
     UserModule,
     AuthModule,
