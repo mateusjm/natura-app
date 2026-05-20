@@ -31,7 +31,7 @@ const dbSslOptions = useDbSsl
       password: process.env.DB_PASS,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true,
+      synchronize: process.env.NODE_ENV !== 'production',
       ...(dbSslOptions && {
         ssl: dbSslOptions,
         extra: {
