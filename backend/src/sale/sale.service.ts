@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Between, MoreThanOrEqual, LessThan  } from 'typeorm';
+import { Repository, Between, MoreThanOrEqual, LessThan } from 'typeorm';
 import { Sale } from './entities/sale.entity';
 import { CreateSaleDto } from './dto/create-sale.dto';
 import { UpdateSaleDto } from './dto/update-sale.dto';
@@ -19,38 +19,38 @@ export class SaleService {
     private clientRepository: Repository<Client>,
   ) {}
 
-  // ----------------- CRUD -----------------
-  async create(data: CreateSaleDto) {
+  async create(data: CreateSaleDto, userId: string) {
     const client = await this.clientRepository.findOne({
-      where: { id: data.client_id },
+      where: { id: data.client_id, userId },
     });
     if (!client) throw new NotFoundException('Cliente não encontrado');
 
-    const sale = this.saleRepository.create({ ...data, client });
+    const sale = this.saleRepository.create({ ...data, client, userId });
     return this.saleRepository.save(sale);
   }
 
-  findAll() {
+  findAll(userId: string) {
     return this.saleRepository.find({
+      where: { userId },
       relations: ['client'],
       order: { date: 'DESC' },
     });
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId: string) {
     const sale = await this.saleRepository.findOne({
-      where: { id },
+      where: { id, userId },
       relations: ['client', 'items'],
     });
     if (!sale) throw new NotFoundException('Venda não encontrada');
     return sale;
   }
 
-  async update(id: string, updateSaleDto: UpdateSaleDto) {
-    const sale = await this.findOne(id);
+  async update(id: string, updateSaleDto: UpdateSaleDto, userId: string) {
+    const sale = await this.findOne(id, userId);
     if (updateSaleDto.client_id) {
       const client = await this.clientRepository.findOne({
-        where: { id: updateSaleDto.client_id },
+        where: { id: updateSaleDto.client_id, userId },
       });
       if (!client)
         throw new NotFoundException(
@@ -62,13 +62,12 @@ export class SaleService {
     return this.saleRepository.save(sale);
   }
 
-  async remove(id: string) {
-    const sale = await this.findOne(id);
-    await this.saleRepository.delete(id);
+  async remove(id: string, userId: string) {
+    const sale = await this.findOne(id, userId);
+    await this.saleRepository.delete({ id, userId });
     return sale;
   }
 
-  // ----------------- Filtros por período -----------------
   private getStartDate(period: PeriodFilter): Date | undefined {
     const now = new Date();
     switch (period) {
@@ -86,15 +85,20 @@ export class SaleService {
     }
   }
 
-  // ----------------- Estatísticas -----------------
-  async getTotalSalesAmount(period: PeriodFilter = '1m') {
+  private async findSalesInPeriod(userId: string, period: PeriodFilter) {
     const startDate = this.getStartDate(period);
 
-    const sales = startDate
-      ? await this.saleRepository.find({
-          where: { date: Between(startDate, new Date()) },
-        })
-      : await this.saleRepository.find();
+    if (startDate) {
+      return this.saleRepository.find({
+        where: { userId, date: Between(startDate, new Date()) },
+      });
+    }
+
+    return this.saleRepository.find({ where: { userId } });
+  }
+
+  async getTotalSalesAmount(userId: string, period: PeriodFilter = '1m') {
+    const sales = await this.findSalesInPeriod(userId, period);
 
     const totalSalesAmount = sales.reduce(
       (acc, sale) => acc + Number(sale.totalPrice || 0),
@@ -104,14 +108,8 @@ export class SaleService {
     return { totalSalesAmount };
   }
 
-  async getTotalSalesProfit(period: PeriodFilter = '1m') {
-    const startDate = this.getStartDate(period);
-
-    const sales = startDate
-      ? await this.saleRepository.find({
-          where: { date: Between(startDate, new Date()) },
-        })
-      : await this.saleRepository.find();
+  async getTotalSalesProfit(userId: string, period: PeriodFilter = '1m') {
+    const sales = await this.findSalesInPeriod(userId, period);
 
     const totalSalesProfit = sales.reduce(
       (acc, sale) =>
@@ -122,15 +120,18 @@ export class SaleService {
     return { totalSalesProfit };
   }
 
-  async getMonthlySalesStats(period: PeriodFilter = '1m') {
+  async getMonthlySalesStats(userId: string, period: PeriodFilter = '1m') {
     const startDate = this.getStartDate(period);
 
     const sales = startDate
       ? await this.saleRepository.find({
-          where: { date: Between(startDate, new Date()) },
+          where: { userId, date: Between(startDate, new Date()) },
           order: { date: 'ASC' },
         })
-      : await this.saleRepository.find({ order: { date: 'ASC' } });
+      : await this.saleRepository.find({
+          where: { userId },
+          order: { date: 'ASC' },
+        });
 
     const monthlyData: Record<
       string,
@@ -162,11 +163,12 @@ export class SaleService {
       .sort((a, b) => a.month.localeCompare(b.month));
   }
 
-  async getPendingDueSales(limit = 10) {
+  async getPendingDueSales(userId: string, limit = 10) {
     const today = new Date();
 
-    const sales = await this.saleRepository.find({
+    return this.saleRepository.find({
       where: {
+        userId,
         status: SaleStatus.PENDENTE,
         deadline: MoreThanOrEqual(today),
       },
@@ -174,23 +176,20 @@ export class SaleService {
       order: { deadline: 'ASC' },
       take: limit,
     });
-
-    return sales;
   }
 
-  async getPendingOverdueSales(limit = 10) {
+  async getPendingOverdueSales(userId: string, limit = 10) {
     const today = new Date();
 
-    const sales = await this.saleRepository.find({
+    return this.saleRepository.find({
       where: {
+        userId,
         status: SaleStatus.PENDENTE,
-        deadline: LessThan(today), // vendas que já passaram da data limite
+        deadline: LessThan(today),
       },
       relations: ['client'],
-      order: { deadline: 'ASC' }, // opcional: as mais antigas primeiro
+      order: { deadline: 'ASC' },
       take: limit,
     });
-
-    return sales;
   }
 }

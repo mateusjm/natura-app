@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { Client } from '../../client/entities/client.entity';
 import { SaleProductItem } from '../../sale-product-item/entities/sale-product-item.entity';
+import { User } from '../../user/entities/user.entity';
 
 export enum PaymentMethod {
   DINHEIRO = 'dinheiro',
@@ -24,6 +25,13 @@ export enum SaleStatus {
 export class Sale {
   @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
+  userId: string;
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'userId' })
+  user: User;
 
   @Column()
   date: Date;

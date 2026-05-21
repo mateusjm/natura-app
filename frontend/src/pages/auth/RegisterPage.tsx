@@ -13,7 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { useContext, useState } from "react";
-import { Link as RouterLink, useNavigate } from "react-router-dom";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function RegisterPage() {
   const [form, setForm] = useState<RegisterFields>({
@@ -32,7 +32,6 @@ export default function RegisterPage() {
   if (!authContext) throw new Error("AuthContext not found");
 
   const { handleRegister } = authContext;
-  const navigate = useNavigate();
 
   const handleChange =
     (field: keyof RegisterFields) =>
@@ -51,7 +50,6 @@ export default function RegisterPage() {
 
     try {
       await handleRegister(form);
-      navigate("/auth/login");
     } catch (err: unknown) {
       const status = (err as { response?: { status?: number } })?.response
         ?.status;

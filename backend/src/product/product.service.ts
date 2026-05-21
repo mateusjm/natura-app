@@ -12,19 +12,20 @@ export class ProductService {
     private productRepository: Repository<Product>,
   ) {}
 
-  create(data: CreateProductDto) {
-    const product = this.productRepository.create(data);
+  create(data: CreateProductDto, userId: string) {
+    const product = this.productRepository.create({ ...data, userId });
     return this.productRepository.save(product);
   }
 
-  findAll() {
-    return this.productRepository.find();
+  findAll(userId: string) {
+    return this.productRepository.find({ where: { userId } });
   }
 
-  async findAllWithStock() {
+  async findAllWithStock(userId: string) {
     const products = await this.productRepository
       .createQueryBuilder('product')
       .leftJoin('product.items', 'item')
+      .where('product.userId = :userId', { userId })
       .addSelect('COALESCE(SUM(item.quantity), 0)', 'totalQuantity')
       .groupBy('product.id')
       .getRawAndEntities();
@@ -35,8 +36,10 @@ export class ProductService {
     }));
   }
 
-  async findOne(id: number) {
-    const product = await this.productRepository.findOne({ where: { id } });
+  async findOne(id: number, userId: string) {
+    const product = await this.productRepository.findOne({
+      where: { id, userId },
+    });
     if (!product) {
       throw new NotFoundException('Produto não encontrado');
     }
@@ -44,15 +47,15 @@ export class ProductService {
     return product;
   }
 
-  async update(id: number, updateProductDto: UpdateProductDto) {
-    const product = await this.findOne(id);
+  async update(id: number, updateProductDto: UpdateProductDto, userId: string) {
+    const product = await this.findOne(id, userId);
     Object.assign(product, updateProductDto);
     return this.productRepository.save(product);
   }
 
-  async remove(id: number) {
-    const product = await this.findOne(id);
-    await this.productRepository.delete(id);
+  async remove(id: number, userId: string) {
+    const product = await this.findOne(id, userId);
+    await this.productRepository.delete({ id, userId });
     return product;
   }
 }

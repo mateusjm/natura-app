@@ -26,31 +26,67 @@ export class SaleProductItemService {
     private dataSource: DataSource,
   ) {}
 
-  // =========================================================
-  // CREATE  → diminui estoque da quantidade usada
-  // =========================================================
-  async create(data: CreateSaleProductItemDto) {
-    return await this.dataSource.transaction(async (manager) => {
-      const sale = await manager.findOne(Sale, {
-        where: { id: data.sale_id },
-      });
-      if (!sale)
-        throw new NotFoundException(
-          `Venda com ID ${data.sale_id} não encontrada`,
-        );
+  private async findSaleForUser(
+    manager: typeof this.dataSource.manager,
+    saleId: string,
+    userId: string,
+  ) {
+    const sale = await manager.findOne(Sale, {
+      where: { id: saleId, userId },
+    });
+    if (!sale) {
+      throw new NotFoundException(`Venda com ID ${saleId} não encontrada`);
+    }
+    return sale;
+  }
 
-      const productItem = await manager.findOne(ProductItem, {
-        where: { id: data.product_item_id },
-      });
-      if (!productItem)
-        throw new NotFoundException(
-          `Produto com ID ${data.product_item_id} não encontrado`,
-        );
+  private async findProductItemForUser(
+    manager: typeof this.dataSource.manager,
+    productItemId: string,
+    userId: string,
+  ) {
+    const productItem = await manager.findOne(ProductItem, {
+      where: { id: productItemId, product: { userId } },
+      relations: ['product'],
+    });
+    if (!productItem) {
+      throw new NotFoundException(
+        `Produto com ID ${productItemId} não encontrado`,
+      );
+    }
+    return productItem;
+  }
+
+  private async findSaleProductItemForUser(
+    manager: typeof this.dataSource.manager,
+    id: number,
+    userId: string,
+  ) {
+    const saleProductItem = await manager.findOne(SaleProductItem, {
+      where: { id, sale: { userId } },
+      relations: ['sale', 'product_item', 'product_item.product'],
+    });
+
+    if (!saleProductItem) {
+      throw new NotFoundException(`Item da venda com ID ${id} não encontrado`);
+    }
+
+    return saleProductItem;
+  }
+
+  async create(data: CreateSaleProductItemDto, userId: string) {
+    return await this.dataSource.transaction(async (manager) => {
+      const sale = await this.findSaleForUser(manager, data.sale_id, userId);
+
+      const productItem = await this.findProductItemForUser(
+        manager,
+        data.product_item_id,
+        userId,
+      );
 
       if (productItem.quantity < data.quantity)
         throw new BadRequestException(`Estoque insuficiente.`);
 
-      // diminuir estoque
       productItem.quantity -= data.quantity;
       await manager.save(productItem);
 
@@ -63,20 +99,16 @@ export class SaleProductItemService {
 
       const saved = await manager.save(SaleProductItem, saleProductItem);
 
-      // 🔥 AGORA RETORNA O OBJETO COMPLETO (FUNDAMENTAL!)
       return manager.findOne(SaleProductItem, {
-        where: { id: saved.id },
+        where: { id: saved.id, sale: { userId } },
         relations: ['sale', 'product_item', 'product_item.product'],
       });
     });
   }
 
-  // =========================================================
-  // FIND ONE
-  // =========================================================
-  async findOne(id: number) {
+  async findOne(id: number, userId: string) {
     const saleProductItem = await this.saleProductItemRepository.findOne({
-      where: { id },
+      where: { id, sale: { userId } },
       relations: ['sale', 'product_item', 'product_item.product'],
     });
 
@@ -86,40 +118,26 @@ export class SaleProductItemService {
     return saleProductItem;
   }
 
-  // =========================================================
-  // UPDATE  → ajusta estoque pela diferença
-  // =========================================================
-  async update(id: number, updateDto: UpdateSaleProductItemDto) {
+  async update(id: number, updateDto: UpdateSaleProductItemDto, userId: string) {
     return await this.dataSource.transaction(async (manager) => {
-      const existing = await manager.findOne(SaleProductItem, {
-        where: { id },
-        relations: ['product_item'],
-      });
+      const existing = await this.findSaleProductItemForUser(manager, id, userId);
 
-      if (!existing)
-        throw new NotFoundException(
-          `Item da venda com ID ${id} não encontrado`,
-        );
+      const productItemId =
+        updateDto.product_item_id ?? existing.product_item.id;
 
-      const productItem = await manager.findOne(ProductItem, {
-        where: { id: updateDto.product_item_id ?? existing.product_item.id },
-      });
+      const productItem = await this.findProductItemForUser(
+        manager,
+        productItemId,
+        userId,
+      );
 
-      if (!productItem)
-        throw new NotFoundException(
-          `Produto com ID ${updateDto.product_item_id} não encontrado`,
-        );
-
-      // SE TROCAR O PRODUTO
       if (
         updateDto.product_item_id &&
         updateDto.product_item_id !== existing.product_item.id
       ) {
-        // repõe estoque do antigo
         existing.product_item.quantity += existing.quantity;
         await manager.save(existing.product_item);
 
-        // diminuir estoque do novo
         if (productItem.quantity < (updateDto.quantity ?? existing.quantity))
           throw new BadRequestException('Estoque insuficiente');
 
@@ -132,14 +150,12 @@ export class SaleProductItemService {
 
         const saved = await manager.save(SaleProductItem, existing);
 
-        //  RETORNA O OBJETO COMPLETO
         return manager.findOne(SaleProductItem, {
-          where: { id: saved.id },
+          where: { id: saved.id, sale: { userId } },
           relations: ['sale', 'product_item', 'product_item.product'],
         });
       }
 
-      // SE NÃO TROCOU O PRODUTO → ajustar diferença
       const newQty = updateDto.quantity ?? existing.quantity;
       const diff = newQty - existing.quantity;
 
@@ -158,21 +174,17 @@ export class SaleProductItemService {
 
       const saved = await manager.save(SaleProductItem, existing);
 
-      //  RETORNA O OBJETO COMPLETO
       return manager.findOne(SaleProductItem, {
-        where: { id: saved.id },
+        where: { id: saved.id, sale: { userId } },
         relations: ['sale', 'product_item', 'product_item.product'],
       });
     });
   }
 
-  // =========================================================
-  // REMOVE  → repõe estoque
-  // =========================================================
-  async remove(id: number) {
+  async remove(id: number, userId: string) {
     return await this.dataSource.transaction(async (manager) => {
       const saleProductItem = await manager.findOne(SaleProductItem, {
-        where: { id },
+        where: { id, sale: { userId } },
         relations: ['product_item'],
       });
 
@@ -181,7 +193,6 @@ export class SaleProductItemService {
           `Item da venda com ID ${id} não encontrado`,
         );
 
-      // repõe estoque
       saleProductItem.product_item.quantity += saleProductItem.quantity;
       await manager.save(saleProductItem.product_item);
 

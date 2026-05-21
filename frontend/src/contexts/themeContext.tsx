@@ -7,14 +7,15 @@ type ThemeContextType = {
 };
 
 const ThemeContext = createContext<ThemeContextType>({
-  darkMode: false,
+  darkMode: true,
   toggleDarkMode: () => {},
 });
 
 export const ThemeProviderCustom = ({ children }: { children: ReactNode }) => {
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem("darkMode");
-    return saved === "true"; 
+    if (saved === null) return true;
+    return saved === "true";
   });
 
   const toggleDarkMode = () => {

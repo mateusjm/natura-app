@@ -1,4 +1,10 @@
-import { PRIMARY } from "@/components/Landing/landingStyles";
+import {
+  getHeroCenterCircleSx,
+  getHeroFloatingCardSx,
+  getHeroOrbitIconSx,
+  getHeroPulseGlowSx,
+  PRIMARY,
+} from "@/components/Landing/landingStyles";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import GroupIcon from "@mui/icons-material/Group";
 import LayersIcon from "@mui/icons-material/Layers";
@@ -60,15 +66,13 @@ export default function HeroVisual() {
     >
       <Box
         component={motion.div}
-        animate={{ scale: [1, 1.04, 1], opacity: [0.5, 0.7, 0.5] }}
+        animate={
+          isDark
+            ? { scale: [1, 1.04, 1], opacity: [0.5, 0.7, 0.5] }
+            : undefined
+        }
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-        sx={{
-          position: "absolute",
-          width: { xs: 220, md: 280 },
-          height: { xs: 220, md: 280 },
-          borderRadius: "50%",
-          background: `radial-gradient(circle, ${PRIMARY}${isDark ? "35" : "25"} 0%, transparent 70%)`,
-        }}
+        sx={getHeroPulseGlowSx(theme)}
       />
 
       <Box
@@ -80,27 +84,14 @@ export default function HeroVisual() {
           width: { xs: 200, md: 260 },
           height: { xs: 200, md: 260 },
           borderRadius: "50%",
-          border: `2px dashed ${PRIMARY}44`,
+          border: "2px dashed",
+          borderColor: isDark ? `${PRIMARY}44` : "divider",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
         }}
       >
-        <Box
-          sx={{
-            width: { xs: 120, md: 150 },
-            height: { xs: 120, md: 150 },
-            borderRadius: "50%",
-            bgcolor: "background.paper",
-            border: `2px solid ${PRIMARY}55`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            boxShadow: isDark
-              ? `0 0 60px ${PRIMARY}22`
-              : `0 0 60px ${PRIMARY}18`,
-          }}
-        >
+        <Box sx={getHeroCenterCircleSx(theme)}>
           <TrendingUpIcon sx={{ fontSize: { xs: 48, md: 64 }, color: "primary.main" }} />
         </Box>
 
@@ -121,20 +112,7 @@ export default function HeroVisual() {
                 transform: `translate(calc(-50% + ${Math.cos(rad) * r}px), calc(-50% + ${Math.sin(rad) * r}px))`,
               }}
             >
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 3,
-                  bgcolor: "background.paper",
-                  border: "1px solid",
-                  borderColor: `${PRIMARY}44`,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  boxShadow: 2,
-                }}
-              >
+              <Box sx={getHeroOrbitIconSx(theme)}>
                 <Icon sx={{ color: "primary.main", fontSize: 22 }} />
               </Box>
             </Box>
@@ -151,20 +129,14 @@ export default function HeroVisual() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 + card.delay, duration: 0.5 }}
-            whileHover={{ scale: 1.03 }}
+            whileHover={isDark ? { scale: 1.03 } : undefined}
             sx={{
               position: "absolute",
               top: card.top,
               left: card.left,
               right: card.right,
               bottom: card.bottom,
-              p: 1.5,
-              borderRadius: 3,
-              bgcolor: "background.paper",
-              border: "1px solid",
-              borderColor: `${PRIMARY}33`,
-              boxShadow: isDark ? 4 : 3,
-              minWidth: 140,
+              ...getHeroFloatingCardSx(theme),
             }}
           >
             <Box sx={{ display: "flex", alignItems: "center", gap: 1, mb: 0.5 }}>

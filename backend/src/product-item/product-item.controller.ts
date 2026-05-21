@@ -6,19 +6,29 @@ import {
   Param,
   Delete,
   Patch,
-  Query,
+  UseGuards,
 } from '@nestjs/common';
 import { ProductItemService } from './product-item.service';
 import { CreateProductItemDto } from './dto/create-product-item.dto';
 import { UpdateProductItemDto } from './dto/update-product-item.dto';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import type { JwtPayload } from '../auth/interfaces/jwt-payload.interface';
 
+@UseGuards(JwtAuthGuard)
 @Controller('product-item')
 export class ProductItemController {
   constructor(private readonly productItemService: ProductItemService) {}
 
   @Post()
-  create(@Body() createProductItemDto: CreateProductItemDto) {
-    const productItem = this.productItemService.create(createProductItemDto);
+  create(
+    @Body() createProductItemDto: CreateProductItemDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const productItem = this.productItemService.create(
+      createProductItemDto,
+      user.sub,
+    );
 
     return {
       ...productItem,
@@ -27,34 +37,40 @@ export class ProductItemController {
   }
 
   @Get()
-  findAll() {
-    return this.productItemService.findAll();
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.productItemService.findAll(user.sub);
   }
 
   @Get('total-stock-value')
-  async getTotalStockValue() {
-    const totalValue = await this.productItemService.getTotalStockValue();
+  async getTotalStockValue(@CurrentUser() user: JwtPayload) {
+    const totalValue = await this.productItemService.getTotalStockValue(
+      user.sub,
+    );
     return { totalStockValue: totalValue };
   }
 
   @Get('expiring')
-  async getExpiringItems() {
-    return this.productItemService.findExpiringItems();
+  async getExpiringItems(@CurrentUser() user: JwtPayload) {
+    return this.productItemService.findExpiringItems(user.sub);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.productItemService.findOne(id);
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.productItemService.findOne(id, user.sub);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDto: UpdateProductItemDto) {
-    return this.productItemService.update(id, updateDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateDto: UpdateProductItemDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.productItemService.update(id, updateDto, user.sub);
   }
 
   @Delete(':id')
-  async remove(@Param('id') id: string) {
-    await this.productItemService.remove(id);
+  async remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    await this.productItemService.remove(id, user.sub);
     return { message: 'Produto Item excluído com sucesso!' };
   }
 }

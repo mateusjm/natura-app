@@ -1,7 +1,12 @@
 import LandingMobileMenu, {
   LandingMenuToggle,
 } from "@/components/Landing/LandingMobileMenu";
-import { getGlassHeader } from "@/components/Landing/landingStyles";
+import {
+  getGlassHeader,
+  getHeaderScrollShadow,
+  getPrimaryButtonShadow,
+  landingNavButtonSx,
+} from "@/components/Landing/landingStyles";
 import { landingNavLinks } from "@/components/Landing/landingContent";
 import {
   AppBar,
@@ -55,10 +60,11 @@ export default function LandingHeader() {
       <AppBar
         position="fixed"
         elevation={0}
+        color="transparent"
         sx={(theme) => ({
           ...getGlassHeader(theme),
           transition: "box-shadow 0.3s ease",
-          boxShadow: scrolled ? "0 4px 24px rgba(0,0,0,0.06)" : "none",
+          boxShadow: getHeaderScrollShadow(theme, scrolled),
         })}
       >
         <Container maxWidth="lg">
@@ -93,8 +99,7 @@ export default function LandingHeader() {
                   <Button
                     component={RouterLink}
                     to="/auth/login"
-                    color="inherit"
-                    sx={{ fontWeight: 500 }}
+                    sx={landingNavButtonSx}
                   >
                     Entrar
                   </Button>
@@ -103,11 +108,12 @@ export default function LandingHeader() {
                     to="/auth/register"
                     variant="contained"
                     color="primary"
-                    sx={{
+                    disableElevation
+                    sx={(theme) => ({
                       fontWeight: 600,
                       px: 2.5,
-                      boxShadow: "0 4px 14px rgba(236, 107, 32, 0.35)",
-                    }}
+                      ...getPrimaryButtonShadow(theme),
+                    })}
                   >
                     Criar conta
                   </Button>
@@ -122,11 +128,12 @@ export default function LandingHeader() {
                     variant="contained"
                     color="primary"
                     size="small"
-                    sx={{
+                    disableElevation
+                    sx={(theme) => ({
                       fontWeight: 600,
-                      boxShadow: "0 4px 14px rgba(236, 107, 32, 0.35)",
                       display: { xs: "none", sm: "inline-flex" },
-                    }}
+                      ...getPrimaryButtonShadow(theme),
+                    })}
                   >
                     Criar conta
                   </Button>

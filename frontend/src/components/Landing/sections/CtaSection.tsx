@@ -1,6 +1,10 @@
 import { FadeIn, ScaleIn } from "@/components/Landing/LandingMotion";
 import { landingCta } from "@/components/Landing/landingContent";
-import { getCtaGradientBox, landingSectionCompact } from "@/components/Landing/landingStyles";
+import {
+  getCtaGradientBox,
+  getPrimaryButtonShadow,
+  landingSectionCompact,
+} from "@/components/Landing/landingStyles";
 import ArrowForwardIcon from "@mui/icons-material/ArrowForward";
 import { Box, Button, Container, Typography } from "@mui/material";
 import { Link as RouterLink } from "react-router-dom";
@@ -39,11 +43,12 @@ export default function CtaSection() {
                   variant="contained"
                   color="primary"
                   size="large"
+                  disableElevation
                   endIcon={<ArrowForwardIcon />}
-                  sx={{
+                  sx={(theme) => ({
                     px: 3,
-                    boxShadow: "0 8px 24px rgba(236, 107, 32, 0.35)",
-                  }}
+                    ...getPrimaryButtonShadow(theme),
+                  })}
                 >
                   Criar conta grátis
                 </Button>

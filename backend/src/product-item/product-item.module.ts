@@ -5,9 +5,13 @@ import { ProductItemController } from './product-item.controller';
 import { ProductItem } from './entities/product-item.entity';
 import { Product } from '../product/entities/product.entity';
 import { SaleProductItem } from '../sale-product-item/entities/sale-product-item.entity';
+import { JwtAuthGuardModule } from '../auth/jwt-auth-guard.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ProductItem, Product, SaleProductItem])],
+  imports: [
+    TypeOrmModule.forFeature([ProductItem, Product, SaleProductItem]),
+    JwtAuthGuardModule,
+  ],
   controllers: [ProductItemController],
   providers: [ProductItemService],
 })

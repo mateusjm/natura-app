@@ -12,17 +12,17 @@ export class ClientService {
     private clientRepository: Repository<Client>,
   ) {}
 
-  create(data: CreateClientDto) {
-    const client = this.clientRepository.create(data);
+  create(data: CreateClientDto, userId: string) {
+    const client = this.clientRepository.create({ ...data, userId });
     return this.clientRepository.save(client);
   }
 
-  findAll() {
-    return this.clientRepository.find();
+  findAll(userId: string) {
+    return this.clientRepository.find({ where: { userId } });
   }
 
-  async findOne(id: string) {
-    const client = await this.clientRepository.findOne({ where: { id } });
+  async findOne(id: string, userId: string) {
+    const client = await this.clientRepository.findOne({ where: { id, userId } });
     if (!client) {
       throw new NotFoundException('Cliente não encontrado');
     }
@@ -30,15 +30,15 @@ export class ClientService {
     return client;
   }
 
-  async update(id: string, updateClientDto: UpdateClientDto) {
-    const client = await this.findOne(id);
+  async update(id: string, updateClientDto: UpdateClientDto, userId: string) {
+    const client = await this.findOne(id, userId);
     Object.assign(client, updateClientDto);
     return this.clientRepository.save(client);
   }
 
-  async remove(id: string) {
-    const product = await this.findOne(id);
-    await this.clientRepository.delete(id);
+  async remove(id: string, userId: string) {
+    const product = await this.findOne(id, userId);
+    await this.clientRepository.delete({ id, userId });
     return product;
   }
 }

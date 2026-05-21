@@ -1,4 +1,8 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UserService } from '../user/user.service';
@@ -14,6 +18,11 @@ export class AuthService {
   ) {}
 
   async register(data: RegisterDto) {
+    const existing = await this.userService.findByEmail(data.email);
+    if (existing) {
+      throw new ConflictException('E-mail já cadastrado');
+    }
+
     const hashed = await bcrypt.hash(data.password, 10);
 
     const { confirmPassword, ...rest } = data;
@@ -23,7 +32,7 @@ export class AuthService {
       password: hashed,
     });
 
-    return { id: user.id, email: user.email };
+    return this.buildAuthResponse(user);
   }
 
   async login(data: LoginDto) {
@@ -39,13 +48,21 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    return this.buildAuthResponse(user);
+  }
+
+  private async buildAuthResponse(user: {
+    id: string;
+    name: string;
+    email: string;
+  }) {
     const token = await this.jwt.signAsync({
       sub: user.id,
       email: user.email,
     });
 
     return {
-      token: token,
+      token,
       user: {
         id: user.id,
         name: user.name,

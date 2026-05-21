@@ -1,5 +1,5 @@
 import { landingNavLinks } from "@/components/Landing/landingContent";
-import { PRIMARY } from "@/components/Landing/landingStyles";
+import { getPrimaryButtonShadow, PRIMARY } from "@/components/Landing/landingStyles";
 import CloseIcon from "@mui/icons-material/Close";
 import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
 import MenuIcon from "@mui/icons-material/Menu";
@@ -224,14 +224,15 @@ export default function LandingMobileMenu({
           fullWidth
           variant="contained"
           color="primary"
+          disableElevation
           startIcon={<PersonAddOutlinedIcon />}
           onClick={onClose}
-          sx={{
+          sx={(theme) => ({
             py: 1.2,
             fontWeight: 600,
             borderRadius: 3,
-            boxShadow: "0 6px 20px rgba(236, 107, 32, 0.35)",
-          }}
+            ...getPrimaryButtonShadow(theme),
+          })}
         >
           Criar conta
         </Button>

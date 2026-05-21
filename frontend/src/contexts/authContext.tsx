@@ -52,18 +52,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return await authService.update(data);
   }
 
-  async function handleLogin(loginFields: LoginFields) {
-    const response = await authService.login(loginFields);
-    const { data } = await authService.me();
-    afterConfirmLogin(data);
+  async function completeAuthSession(
+    response: { data: { user?: User; token?: string } }
+  ) {
+    const userFromResponse = response.data.user;
+    if (userFromResponse) {
+      afterConfirmLogin(userFromResponse);
+    } else {
+      const { data } = await authService.me();
+      afterConfirmLogin(data);
+    }
 
     navigate("/painel");
     return response;
   }
 
+  async function handleLogin(loginFields: LoginFields) {
+    const response = await authService.login(loginFields);
+    return completeAuthSession(response);
+  }
+
   async function handleRegister(registerFields: RegisterFields) {
     const response = await authService.register(registerFields);
-    return response;
+    return completeAuthSession(response);
   }
 
   function afterConfirmLogin(data: any) {

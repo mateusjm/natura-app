@@ -1,10 +1,6 @@
-import {
-  Injectable,
-  NotFoundException,
-  BadRequestException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, Not, LessThanOrEqual, MoreThan, Between } from 'typeorm';
+import { Repository, Not, Between } from 'typeorm';
 import { ProductItem } from './entities/product-item.entity';
 import { CreateProductItemDto } from './dto/create-product-item.dto';
 import { UpdateProductItemDto } from './dto/update-product-item.dto';
@@ -20,14 +16,20 @@ export class ProductItemService {
     private productRepository: Repository<Product>,
   ) {}
 
-  async create(data: CreateProductItemDto) {
+  private async findProductForUser(productId: number, userId: string) {
     const product = await this.productRepository.findOne({
-      where: { id: data.product_id },
+      where: { id: productId, userId },
     });
 
     if (!product) {
       throw new NotFoundException('Produto não encontrado');
     }
+
+    return product;
+  }
+
+  async create(data: CreateProductItemDto, userId: string) {
+    const product = await this.findProductForUser(data.product_id, userId);
 
     const productItem = this.productItemRepository.create({
       ...data,
@@ -37,16 +39,17 @@ export class ProductItemService {
     const saved = await this.productItemRepository.save(productItem);
 
     return this.productItemRepository.findOne({
-      where: { id: saved.id },
+      where: { id: saved.id, product: { userId } },
       relations: ['product'],
     });
   }
 
-  findAll() {
+  findAll(userId: string) {
     return this.productItemRepository.find({
       relations: ['product'],
       where: {
         quantity: Not(0),
+        product: { userId },
       },
       order: {
         validity: 'ASC',
@@ -54,9 +57,10 @@ export class ProductItemService {
     });
   }
 
-  async getTotalStockValue(): Promise<number> {
+  async getTotalStockValue(userId: string): Promise<number> {
     const productItems = await this.productItemRepository.find({
-      where: { quantity: Not(0) },
+      where: { quantity: Not(0), product: { userId } },
+      relations: ['product'],
     });
 
     const totalStockValue = productItems.reduce((sum, productItem) => {
@@ -68,9 +72,10 @@ export class ProductItemService {
     return totalStockValue;
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, userId: string) {
     const productItem = await this.productItemRepository.findOne({
-      where: { id },
+      where: { id, product: { userId } },
+      relations: ['product'],
     });
     if (!productItem) {
       throw new NotFoundException('Produto não encontrado em estoque');
@@ -78,7 +83,7 @@ export class ProductItemService {
     return productItem;
   }
 
-  async findExpiringItems(limit = 10) {
+  async findExpiringItems(userId: string, limit = 10) {
     const today = new Date();
     const futureDate = new Date();
     futureDate.setDate(today.getDate() + 30);
@@ -88,6 +93,7 @@ export class ProductItemService {
       where: {
         quantity: Not(0),
         validity: Between(today, futureDate),
+        product: { userId },
       },
       order: {
         validity: 'ASC',
@@ -96,19 +102,14 @@ export class ProductItemService {
     });
   }
 
-  async update(id: string, updateProductItemDto: UpdateProductItemDto) {
-    const productItem = await this.findOne(id);
+  async update(id: string, updateProductItemDto: UpdateProductItemDto, userId: string) {
+    const productItem = await this.findOne(id, userId);
 
     if (updateProductItemDto.product_id) {
-      const product = await this.productRepository.findOne({
-        where: { id: updateProductItemDto.product_id },
-      });
-
-      if (!product) {
-        throw new NotFoundException(
-          `Produto com ID:${updateProductItemDto.product_id} não existe`,
-        );
-      }
+      const product = await this.findProductForUser(
+        updateProductItemDto.product_id,
+        userId,
+      );
 
       productItem.product = product;
       productItem.product_id = product.id;
@@ -119,8 +120,8 @@ export class ProductItemService {
     return this.productItemRepository.save(productItem);
   }
 
-  async remove(id: string) {
-    const productItem = await this.findOne(id);
+  async remove(id: string, userId: string) {
+    const productItem = await this.findOne(id, userId);
     await this.productItemRepository.delete(id);
     return productItem;
   }

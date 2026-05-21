@@ -16,14 +16,22 @@ export const authService = {
   },
 
   register(data: RegisterFields) {
-    return useHttp.post("/auth/register", data);
+    return useHttp.post("auth/register", data).then((res) => {
+      const token = res.data.token;
+
+      if (token) {
+        localStorage.setItem("access-token", token);
+      }
+
+      return res;
+    });
   },
 
   me() {
-    return useHttp.get("/auth/me");
+    return useHttp.get("auth/me");
   },
 
   update(data: Partial<RegisterFields>) {
-    return useHttp.put("/auth/update", data);
+    return useHttp.put("auth/update", data);
   },
 };
