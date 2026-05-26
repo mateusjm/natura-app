@@ -1,7 +1,11 @@
 import { landingNavLinks } from "@/components/Landing/landingContent";
-import { getPrimaryButtonShadow, PRIMARY } from "@/components/Landing/landingStyles";
+import {
+  getLandingHeaderOffset,
+  getPrimaryButtonShadow,
+  PRIMARY,
+} from "@/components/Landing/landingStyles";
 import CloseIcon from "@mui/icons-material/Close";
-import LoginOutlinedIcon from "@mui/icons-material/LoginOutlined";
+import AccessAccountIcon from "@/components/Landing/AccessAccountIcon";
 import MenuIcon from "@mui/icons-material/Menu";
 import PersonAddOutlinedIcon from "@mui/icons-material/PersonAddOutlined";
 import {
@@ -14,18 +18,19 @@ import {
   ListItemButton,
   ListItemText,
   Typography,
+  useMediaQuery,
+  useScrollTrigger,
+  useTheme,
 } from "@mui/material";
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect } from "react";
 import { Link as RouterLink } from "react-router-dom";
 
-const HEADER_OFFSET = 72;
-
-function scrollToSection(id: string) {
+function scrollToSection(id: string, offset: number) {
   const el = document.getElementById(id);
   if (!el) return;
 
-  const top = el.getBoundingClientRect().top + window.scrollY - HEADER_OFFSET;
+  const top = el.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top, behavior: "smooth" });
 }
 
@@ -87,6 +92,11 @@ export default function LandingMobileMenu({
   open,
   onClose,
 }: LandingMobileMenuProps) {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const scrolled = useScrollTrigger({ disableHysteresis: true, threshold: 24 });
+  const headerOffset = getLandingHeaderOffset(scrolled, isMobile);
+
   useEffect(() => {
     if (!open) return;
 
@@ -99,7 +109,7 @@ export default function LandingMobileMenu({
 
   const handleNav = (id: string) => {
     onClose();
-    requestAnimationFrame(() => scrollToSection(id));
+    requestAnimationFrame(() => scrollToSection(id, headerOffset));
   };
 
   return (
@@ -212,11 +222,11 @@ export default function LandingMobileMenu({
           fullWidth
           variant="outlined"
           color="primary"
-          startIcon={<LoginOutlinedIcon />}
+          startIcon={<AccessAccountIcon fontSize="small" />}
           onClick={onClose}
           sx={{ mb: 1.25, py: 1.2, fontWeight: 600, borderRadius: 3 }}
         >
-          Entrar
+          Acessar conta
         </Button>
         <Button
           component={RouterLink}

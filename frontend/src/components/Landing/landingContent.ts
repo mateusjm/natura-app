@@ -1,10 +1,12 @@
+import type { SvgIconComponent } from "@mui/icons-material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import BarChartIcon from "@mui/icons-material/BarChart";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import GroupIcon from "@mui/icons-material/Group";
+import Inventory2OutlinedIcon from "@mui/icons-material/Inventory2Outlined";
 import LayersIcon from "@mui/icons-material/Layers";
 import NotificationsActiveIcon from "@mui/icons-material/NotificationsActive";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
-import type { SvgIconComponent } from "@mui/icons-material";
 
 export interface BenefitItem {
   icon: SvgIconComponent;
@@ -32,10 +34,33 @@ export const landingNavLinks = [
 ];
 
 export const landingHero = {
-  headline: "Controle suas vendas e estoque em um só lugar.",
+  eyebrow: "Gestão inteligente",
+  headlineBefore: "Controle suas vendas e estoque em um",
+  headlineHighlight: "só lugar.",
   subheadline:
-    "Organize clientes, produtos e vendas com alertas operacionais e indicadores claros — feito para quem precisa de controle sem complexidade.",
+    "Organize clientes, produtos e vendas com alertas operacionais e indicadores claros.",
 };
+
+export const landingHeroFeatures: BenefitItem[] = [
+  {
+    icon: BarChartIcon,
+    title: "Indicadores em tempo real",
+    description:
+      "Lucro, vendas e estoque consolidados no painel principal.",
+  },
+  {
+    icon: NotificationsActiveIcon,
+    title: "Alertas operacionais",
+    description:
+      "Pendências de pagamento e validade sempre visíveis.",
+  },
+  {
+    icon: Inventory2OutlinedIcon,
+    title: "Controle de estoque",
+    description:
+      "Entradas, custos e itens próximos do vencimento organizados.",
+  },
+];
 
 export const landingHeroHighlights = [
   "Estoque e validade",
@@ -111,17 +136,20 @@ export const landingSteps: StepItem[] = [
   {
     step: 2,
     title: "Controle estoque",
-    description: "Entradas com validade e custo para saber o que você tem disponível.",
+    description:
+      "Entradas com validade e custo para saber o que você tem disponível.",
   },
   {
     step: 3,
     title: "Registre vendas",
-    description: "Vincule clientes, itens e formas de pagamento em poucos passos.",
+    description:
+      "Vincule clientes, itens e formas de pagamento em poucos passos.",
   },
   {
     step: 4,
     title: "Acompanhe resultados",
-    description: "Use o dashboard para ver lucro, alertas e evolução das vendas.",
+    description:
+      "Use o dashboard para ver lucro, alertas e evolução das vendas.",
   },
 ];
 
@@ -138,11 +166,7 @@ export const landingFeatures: FeatureBlock[] = [
   {
     icon: GroupIcon,
     title: "Clientes",
-    items: [
-      "Cadastro simples",
-      "Consulta rápida",
-      "Vínculo direto com vendas",
-    ],
+    items: ["Cadastro simples", "Consulta rápida", "Vínculo direto com vendas"],
   },
   {
     icon: AttachMoneyIcon,

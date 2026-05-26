@@ -15,6 +15,25 @@ export function getPrimaryButtonShadow(theme: Theme): SystemStyleObject<Theme> {
   };
 }
 
+export function getLandingHeaderOffset(
+  scrolled: boolean,
+  isMobile: boolean,
+): number {
+  if (isMobile) return scrolled ? 60 : 72;
+  return scrolled ? 68 : 88;
+}
+
+export const landingHeaderToolbarSx = {
+  hero: {
+    py: { xs: 2, md: 3 },
+    minHeight: { xs: 56, md: 78 },
+  },
+  scrolled: {
+    py: { xs: 1, md: 1.25 },
+    minHeight: { xs: 56, md: 64 },
+  },
+} as const;
+
 export function getHeaderScrollShadow(theme: Theme, scrolled: boolean) {
   if (!scrolled) return "none";
   return theme.palette.mode === "dark"
@@ -25,7 +44,7 @@ export function getHeaderScrollShadow(theme: Theme, scrolled: boolean) {
 export const landingNavButtonSx: SystemStyleObject<Theme> = {
   color: "text.primary",
   fontWeight: 500,
-  fontSize: "0.95rem",
+  fontSize: "1rem",
   "&:hover": {
     color: "primary.main",
     bgcolor: (theme) =>
@@ -50,7 +69,19 @@ export const landingSectionCompact: SystemStyleObject<Theme> = {
   overflow: "hidden",
 };
 
-export function getGlassHeader(theme: Theme): SystemStyleObject<Theme> {
+export function getGlassHeader(
+  theme: Theme,
+  scrolled: boolean,
+): SystemStyleObject<Theme> {
+  if (!scrolled) {
+    return {
+      backgroundColor: "transparent",
+      backdropFilter: "none",
+      borderBottom: "none",
+      color: "text.primary",
+    };
+  }
+
   return {
     backdropFilter: "blur(12px)",
     backgroundColor:
@@ -125,15 +156,12 @@ export function getCtaGradientBox(theme: Theme): SystemStyleObject<Theme> {
     boxShadow: "none",
     ...(isDark
       ? {
-          background: `linear-gradient(135deg, rgba(236,107,32,0.25) 0%, rgba(65,65,65,0.9) 100%)`,
-          border: "1px solid",
+          background: `#24252A`,
           borderColor: `${PRIMARY}33`,
         }
       : {
           bgcolor: "background.paper",
-          border: "1px solid",
           borderColor: "divider",
-          borderTop: `3px solid ${PRIMARY}`,
         }),
   };
 }

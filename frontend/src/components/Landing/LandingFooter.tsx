@@ -1,5 +1,4 @@
 import { landingFooter } from "@/components/Landing/landingContent";
-import { PRIMARY } from "@/components/Landing/landingStyles";
 import {
   Box,
   Container,
@@ -21,7 +20,9 @@ function FooterAnchor({
   const handleClick = (e: React.MouseEvent) => {
     if (href.startsWith("#")) {
       e.preventDefault();
-      document.getElementById(href.slice(1))?.scrollIntoView({ behavior: "smooth" });
+      document
+        .getElementById(href.slice(1))
+        ?.scrollIntoView({ behavior: "smooth" });
     }
   };
 
@@ -57,7 +58,10 @@ export default function LandingFooter() {
         pb: 5,
         bgcolor: "background.paper",
         borderTop: "1px solid",
-        borderColor: theme.palette.mode === "dark" ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.06)",
+        borderColor:
+          theme.palette.mode === "dark"
+            ? "rgba(255,255,255,0.08)"
+            : "rgba(0,0,0,0.06)",
       }}
     >
       <Container maxWidth="lg">
@@ -76,31 +80,6 @@ export default function LandingFooter() {
             >
               {landingFooter.tagline}
             </Typography>
-            <Box
-              sx={{
-                mt: 2,
-                display: "inline-flex",
-                alignItems: "center",
-                gap: 1,
-                px: 1.5,
-                py: 0.75,
-                borderRadius: 2,
-                bgcolor: `${PRIMARY}14`,
-                border: `1px solid ${PRIMARY}33`,
-              }}
-            >
-              <Box
-                sx={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: "50%",
-                  bgcolor: "primary.main",
-                }}
-              />
-              <Typography variant="caption" fontWeight={600} color="primary.main">
-                Operação diária simplificada
-              </Typography>
-            </Box>
           </Grid>
 
           <Grid size={{ xs: 6, sm: 4, md: 2.5 }}>

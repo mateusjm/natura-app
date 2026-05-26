@@ -5,9 +5,9 @@ const darkTheme = createTheme({
     mode: "dark",
     primary: { main: "#EC6B20" },
     secondary: { main: "#bbb" },
-    background: { default: "#212121", paper: "#414141" },
+    background: { default: "#090A0D", paper: "#24252A" },
     text: { primary: "#ffffff", secondary: "#bbb" },
-    action: { selected: "#333", hover: "#414141" },
+    action: { selected: "#333", hover: "#24252A" },
   },
   typography: {
     fontFamily: "'Folio', 'Inter', sans-serif", 
